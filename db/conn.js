@@ -7,9 +7,9 @@ async function connect() {
             useUnifiedTopology: true,
         })
 
-        console.log('Conectado no mongo TB')
+        console.log('Connected to MongoDB')
     } catch (error) {
-        console.log('Error connection do MongoDB',error)
+        console.log('Error connecting to MongoDB',error)
     }
 }
 

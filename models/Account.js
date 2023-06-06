@@ -12,9 +12,9 @@ const accountSchema = new Schema({
     unique: true,
   },
   balance: {
-    type: mongoose.Decimal128,
+    type: String,
     required: true,
-    default: 0,
+    default: '0.00',
   },
   transactions: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],

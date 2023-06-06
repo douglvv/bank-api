@@ -8,17 +8,15 @@ const accountRoutes = require('./routes/accountRoutes')
 
 
 // Middlewares
-app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/account', accountRoutes)
 
 
 const port = 3000;
-// db.connect().then(() => { // Aplicação começa a ouvir após conectar no banco
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
-// })
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
 
