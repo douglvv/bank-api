@@ -2,10 +2,8 @@ const express = require('express');
 const app = express();
 require('./db/conn')
 
-// Routes for models
+// Routes
 const accountRoutes = require('./routes/accountRoutes')
-// Transaction routes
-
 
 // Middlewares
 app.use(express.json());

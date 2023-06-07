@@ -147,8 +147,7 @@ describe('Bank API', () => {
 
 });
 
-// Depois de tudo, fecha a conexão com o banco
-// E o servidor para de ouvir
+// Fecha o servidor e a conexão com o banco
 afterAll(async () => { 
     await mongoose.connection.close();
     server.close()

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Account = require('../models/Account')
 const Transaction = require('../models/Transaction')
 
@@ -219,14 +218,12 @@ module.exports = class AccountController {
             if (!id) return res.status(400).send('No account id informed.');
 
             // Verifica as transações do cliente
-            // tanto como pagador como recebedor
-            // popula os campos dos pagadores e recebedores com o nome de cada um
             const transactions = await Transaction.find({
                 $or: [
                     { 'participants.payer': id },
                     { 'participants.receiver': id }
                 ]
-            }).populate({
+            }).populate({ // popula os campos dos pagadores e recebedores com o nome de cada um
                 path: 'participants.payer participants.receiver',
                 select: 'name'
             })
@@ -240,7 +237,5 @@ module.exports = class AccountController {
             res.status(500).send(error.message)
         }
     }
-
-
 
 } // Fim
