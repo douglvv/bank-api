@@ -162,9 +162,53 @@ module.exports = class AccountController {
         }
     }
 
-
     static async transfer(req, res) {
+        try {
+            const idPayer = req.params.id
+            const idReceiver = req.body.idReceiver
+            const transferValue = parseFloat(req.body.value);
 
+            // Verifica os valores recebidos
+            if (!idPayer) return res.status(400).send('Payer account id not informed.');
+            if (!idReceiver) return res.status(400).send('Receiver account id not informed.');
+            if (!transferValue || transferValue <= 0.0) return res.status(400).send('Value not informed or invalid.');
+
+            const payer = await Account.findById(idPayer);
+            const receiver = await Account.findById(idReceiver);
+
+            // Verifica se os clientes existem
+            if (!payer) return res.status(404).send('Payer account not found.');
+            if (!receiver) return res.status(404).send('Receiver account not found.');
+
+            let payerBalance = parseFloat(payer.balance);
+            let receiverBalance = parseFloat(receiver.balance);
+
+            if (payerBalance < transferValue) return res.status(400).send('Not enough balance.');
+
+            const transaction = new Transaction({ // Cria a transação de transferencia
+                type: 'transfer',
+                value: transferValue,
+                participants: {
+                    payer: payer._id,
+                    receiver: receiver._id,
+                },
+            });
+
+            await transaction.save();
+
+            payer.balance = payerBalance - transferValue;
+            receiver.balance = receiverBalance + transferValue;
+            payer.transactions.push(transaction);
+            receiver.transactions.push(transaction);
+
+            await payer.save();
+            await receiver.save();
+
+            res.status(200).send(transaction);
+        } catch (error) {
+            console.log(error)
+            res.status(500).send(error.message)
+        }
     }
 
     static async showStatement(req, res) {
