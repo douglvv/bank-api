@@ -22,7 +22,9 @@ module.exports = class AccountController {
 
         } catch (error) {
             console.log(error);
-            res.status(500).send('An error occurred while creating the account.', error.message);
+            // Se houver um erro de duplicate key (cpf) envia status de conflict
+            if (error.code === 11000) return res.status(409).send('Cpf already registered.');
+            res.status(500).send(error.message);
         }
     }
 
@@ -38,7 +40,7 @@ module.exports = class AccountController {
             res.status(200).json(account);
         } catch (error) {
             console.log(error)
-            res.status(500).send('Internal server error', error);
+            res.status(500).send(error.message);
         }
     }
 
@@ -58,10 +60,19 @@ module.exports = class AccountController {
     static async editAccount(req, res) {
         try {
             const id = req.params.id;
+
+            let account = await Account.findById(id).lean();
+
+            if (!account) {
+                return res.status(404).send('Could not find the account');
+            }
+
             const name = req.body.name
             const cpf = req.body.cpf
 
-            let account = {
+            if (!name && !cpf) return res.status(400).send('No parameter specified for edit.')
+
+            account = {
                 name: name,
                 cpf: cpf
             }
@@ -77,7 +88,7 @@ module.exports = class AccountController {
 
     static async deposit(req, res) {
         try {
-            const id = req.body.id;
+            const id = req.params.id;
             const value = req.body.value;
 
             // Verifica se os dados foram enviados
@@ -114,7 +125,7 @@ module.exports = class AccountController {
 
     static async withdraw(req, res) {
         try {
-            const id = req.body.id;
+            const id = req.params.id;
             const value = req.body.value;
 
             // Verifica se os dados foram enviados
@@ -157,7 +168,33 @@ module.exports = class AccountController {
     }
 
     static async showStatement(req, res) {
+        try {
+            const id = req.params.id
 
+            // Verifica se os dados foram enviados
+            if (!id) return res.status(400).send('No account id informed.');
+
+            // Verifica as transações do cliente
+            // tanto como pagador como recebedor
+            // popula os campos dos pagadores e recebedores com o nome de cada um
+            const transactions = await Transaction.find({
+                $or: [
+                    { 'participants.payer': id },
+                    { 'participants.receiver': id }
+                ]
+            }).populate({
+                path: 'participants.payer participants.receiver',
+                select: 'name'
+            })
+
+            if (!transactions.length) return res.status(404).send('No transactions found.');
+
+            res.status(200).send(transactions)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).send(error.message)
+        }
     }
 
 
