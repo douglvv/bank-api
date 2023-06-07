@@ -21,7 +21,7 @@ module.exports = class AccountController {
             res.status(201).json(account)
 
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
             // Se houver um erro de duplicate key (cpf) envia status de conflict
             if (error.code === 11000) return res.status(409).send('Cpf already registered.');
             res.status(500).send(error.message);
@@ -39,7 +39,7 @@ module.exports = class AccountController {
 
             res.status(200).json(account);
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
             res.status(500).send(error.message);
         }
     }
@@ -52,8 +52,8 @@ module.exports = class AccountController {
 
             res.status(200).send('Conta cancelada com sucesso!')
         } catch (error) {
-            console.log(error)
-            res.status(500).send(error)
+            console.log(error.message)
+            res.status(500).send(error.message)
         }
     }
 
@@ -81,7 +81,7 @@ module.exports = class AccountController {
 
             res.status(200).json(account)
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -116,9 +116,9 @@ module.exports = class AccountController {
 
             await account.save(); // Salva as alterações na conta
 
-            res.status(200).send(account);
+            res.status(200).json(account);
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
             res.status(500).send(error.message);
         }
     }
@@ -155,9 +155,9 @@ module.exports = class AccountController {
 
             await account.save(); // Salva as alterações na conta
 
-            res.status(200).send(account);
+            res.status(200).json(account);
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
             res.status(500).send(error.message);
         }
     }
@@ -204,9 +204,9 @@ module.exports = class AccountController {
             await payer.save();
             await receiver.save();
 
-            res.status(200).send(transaction);
+            res.status(200).json(transaction);
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -233,10 +233,10 @@ module.exports = class AccountController {
 
             if (!transactions.length) return res.status(404).send('No transactions found.');
 
-            res.status(200).send(transactions)
+            res.status(200).json(transactions)
 
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
             res.status(500).send(error.message)
         }
     }
