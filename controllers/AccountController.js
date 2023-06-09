@@ -1,6 +1,9 @@
-const Account = require('../models/Account')
-const Transaction = require('../models/Transaction')
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken'); // Gera o token para o login
+require('dotenv').config(); // Acessa o conteúdo do arquivo.env
+const secret = process.env.JWT_TOKEN; // Chave do token
+const Account = require('../models/Account');
+const Transaction = require('../models/Transaction');
 
 
 module.exports = class AccountController {
@@ -9,11 +12,16 @@ module.exports = class AccountController {
         try {
             const name = req.body.name
             const cpf = req.body.cpf
+            const password = req.body.password
 
             if (!name) return res.status(400).send('No name informed.')
             if (!cpf) return res.status(400).send('No Cpf informed.')
+            if (!password) return res.status(400).send('No password informed.')
 
-            const account = new Account({ name: name, cpf })
+            // Cria o hash da senha
+            const hashPassword = await bcrypt.hash(password, 10);
+
+            const account = new Account({ name: name, cpf: cpf, password: hashPassword })
 
             await account.save()
 
@@ -235,6 +243,27 @@ module.exports = class AccountController {
         } catch (error) {
             console.log(error.message)
             res.status(500).send(error.message)
+        }
+    }
+
+    static async login(req, res) {
+        try {
+            const cpf = req.body.cpf;
+            const password = req.body.password;
+
+            const account = await Account.findOne({ cpf: cpf });
+
+            if (!account) return res.status(401).json({ error: 'Incorrect cpf or password.' });
+
+            const correctPassword = await bcrypt.compare(password, account.password);
+            if (!correctPassword) return res.status(401).json({ error: 'Incorrect cpf or password.' });
+            else {
+                const token = jwt.sign({ cpf: cpf }, secret, { expiresIn: 3600 }); // Gera o token, expira em 3600s
+                res.status(200).json({ account: account, token: token });
+            }
+        } catch (error) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message })
         }
     }
 

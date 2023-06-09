@@ -11,6 +11,10 @@ const accountSchema = new Schema({
     required: true,
     unique: true,
   },
+  password: {
+    type: String,
+    required: true
+  },
   balance: {
     type: String,
     required: true,
