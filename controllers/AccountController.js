@@ -259,7 +259,7 @@ module.exports = class AccountController {
             if (!correctPassword) return res.status(401).json({ error: 'Incorrect cpf or password.' });
             else {
                 const token = jwt.sign({ cpf: cpf }, secret, { expiresIn: 3600 }); // Gera o token, expira em 3600s
-                res.status(200).json({ account: account, token: token });
+                res.status(200).json({token: token });
             }
         } catch (error) {
             console.log(error.message);
