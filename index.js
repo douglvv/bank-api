@@ -40,9 +40,6 @@ server.listen(port, () => {
 module.exports = { app, server };
 
 
-
-
-// Controle de sessão e autenticação
 // Middleware para verificar sessão
 
 // Depois cria frontend
