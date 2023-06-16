@@ -16,7 +16,6 @@ function checkAuth(req, res, next) {
         jwt.verify(token, secret, (err, decoded) => {
             if (err) return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
             else { // Pega a conta armazenada no payload do token e armazena em req.account
-                const account = decoded.account;
                 req.account = decoded.account;
                 console.log(req.account);
                 next();
