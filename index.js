@@ -39,18 +39,3 @@ server.listen(port, () => {
 
 module.exports = { app, server };
 
-
-// Middleware para verificar sessão
-
-// Depois cria frontend
-// Tela login
-// Tela Criar conta
-// Component navbar com data e opção de sair e botao de editar
-// Component conta com balance nome etc
-// Tela Editar conta
-// Tela para fazer transações
-// Tela para ver extrato
-
-// Ver como funciona para fazer routes e fetch na api com react
-
-
