@@ -3,6 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const app = express();
 const process = require('process');
+const cors = require('cors'); // Libera requisições externas para a api
 require('./db/conn')
 
 // Caminho para as variáveis de ambiente para a 
@@ -16,6 +17,7 @@ const accountRoutes = require('./routes/accountRoutes')
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use('/account', accountRoutes)
 
@@ -32,7 +34,7 @@ const options = {
 
 const server = https.createServer(options, app); // cria o servidor
 
-const port = 3000;
+const port = 3001;
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
