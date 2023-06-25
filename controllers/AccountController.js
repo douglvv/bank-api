@@ -76,12 +76,16 @@ module.exports = class AccountController {
 
             const name = req.body.name
             const cpf = req.body.cpf
+            let password = req.body.password
 
-            if (!name && !cpf) return res.status(400).send('No parameter specified for edit.')
+            if (password) password = await bcrypt.hash(password, 10); // Criptografa a nova senha
+            
+            if (!name && !cpf && !password) return res.status(400).send('No parameter specified for edition.')
 
             account = {
                 name: name,
-                cpf: cpf
+                cpf: cpf,
+                password: password
             }
 
             await Account.updateOne({ _id: id }, account)
@@ -261,7 +265,7 @@ module.exports = class AccountController {
             if (!correctPassword) return res.status(401).json({ error: 'Incorrect cpf or password.' });
             else {
                 const token = jwt.sign({ account: account }, secret, { expiresIn: 3600 }); // Gera o token, expira em 3600s
-                res.status(200).json({token: token});
+                res.status(200).json({ token: token });
             }
         } catch (error) {
             console.log(error.message);
