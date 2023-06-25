@@ -86,6 +86,8 @@ module.exports = class AccountController {
 
             await Account.updateOne({ _id: id }, account)
 
+            account = await Account.findById(id).lean();
+
             res.status(200).json(account)
         } catch (error) {
             console.log(error.message)
@@ -259,11 +261,11 @@ module.exports = class AccountController {
             if (!correctPassword) return res.status(401).json({ error: 'Incorrect cpf or password.' });
             else {
                 const token = jwt.sign({ account: account }, secret, { expiresIn: 3600 }); // Gera o token, expira em 3600s
-                res.status(200).json({token: token, account: account});
+                res.status(200).json({token: token});
             }
         } catch (error) {
             console.log(error.message);
-            res.status(500).json({ error: error.message })
+            res.status(500).send(error.message);
         }
     }
 
