@@ -28,7 +28,7 @@ module.exports = class AccountController {
             res.status(201).json(account)
 
         } catch (error) {
-            console.log(error.message);
+            // console.log(error.message);
             // Se houver um erro de duplicate key (cpf) envia status de conflict
             if (error.code === 11000) return res.status(409).send('Cpf already registered.');
             res.status(500).send(error.message);
@@ -46,7 +46,7 @@ module.exports = class AccountController {
 
             res.status(200).json(account);
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
             res.status(500).send(error.message);
         }
     }
@@ -59,7 +59,7 @@ module.exports = class AccountController {
 
             res.status(200).send('Conta cancelada com sucesso!')
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -70,22 +70,16 @@ module.exports = class AccountController {
 
             let account = await Account.findById(id).lean();
 
-            if (!account) {
-                return res.status(404).send('Could not find the account');
-            }
+            if (!account) return res.status(404).send('Could not find the account');
 
             const name = req.body.name
             const cpf = req.body.cpf
-            let password = req.body.password
-
-            if (password) password = await bcrypt.hash(password, 10); // Criptografa a nova senha
             
-            if (!name && !cpf && !password) return res.status(400).send('No parameter specified for edition.')
+            if (!name && !cpf ) return res.status(400).send('No parameter specified for edition.')
 
             account = {
                 name: name,
                 cpf: cpf,
-                password: password
             }
 
             await Account.updateOne({ _id: id }, account)
@@ -94,7 +88,36 @@ module.exports = class AccountController {
 
             res.status(200).json(account)
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
+            res.status(500).send(error.message)
+        }
+    }
+
+    static async changePassword(req, res) {
+        try {
+            const id = req.params.id;
+
+            let account = await Account.findById(id).lean();
+
+            if (!account) return res.status(404).send('Could not find the account.');
+
+            const password = req.body.currentPassword;
+            let newPassword = req.body.newPassword;
+            
+            if (!password || !newPassword ) return res.status(400).send('Missing paramethers.')
+            
+            const correctPassword = await bcrypt.compare(password, account.password);
+            if (!correctPassword) return res.status(401).send("Current password is incorect.")
+
+            newPassword = await bcrypt.hash(newPassword, 10);
+
+            await Account.updateOne({ _id: id }, { password: newPassword });
+
+            account = await Account.findById(id).lean();
+
+            res.status(200).json(account)
+        } catch (error) {
+            // console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -131,7 +154,7 @@ module.exports = class AccountController {
 
             res.status(200).json(account);
         } catch (error) {
-            console.log(error.message);
+            // console.log(error.message);
             res.status(500).send(error.message);
         }
     }
@@ -170,7 +193,7 @@ module.exports = class AccountController {
 
             res.status(200).json(account);
         } catch (error) {
-            console.log(error.message);
+            // console.log(error.message);
             res.status(500).send(error.message);
         }
     }
@@ -219,7 +242,7 @@ module.exports = class AccountController {
 
             res.status(200).json(transaction);
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -247,7 +270,7 @@ module.exports = class AccountController {
             res.status(200).json(transactions)
 
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
             res.status(500).send(error.message)
         }
     }
@@ -268,7 +291,7 @@ module.exports = class AccountController {
                 res.status(200).json({ token: token });
             }
         } catch (error) {
-            console.log(error.message);
+            // console.log(error.message);
             res.status(500).send(error.message);
         }
     }

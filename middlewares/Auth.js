@@ -17,7 +17,7 @@ function checkAuth(req, res, next) {
             if (err) return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
             else { // Pega a conta armazenada no payload do token e armazena em req.account
                 req.account = decoded.account;
-                console.log(req.account);
+                // console.log(req.account);
                 next();
             }
         });

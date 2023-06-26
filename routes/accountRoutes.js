@@ -8,6 +8,7 @@ router.post('/create', AccountController.createAccount);
 router.get('/:id', checkAuth, AccountController.showAccount);
 router.post('/:id/delete', checkAuth, AccountController.deleteAccount);
 router.post('/:id/edit', checkAuth, AccountController.editAccount);
+router.post('/:id/changePassword', checkAuth, AccountController.changePassword);
 router.post('/:id/deposit', AccountController.deposit);
 router.post('/:id/withdraw', checkAuth, AccountController.withdraw);
 router.get('/:id/statement', checkAuth, AccountController.showStatement);
