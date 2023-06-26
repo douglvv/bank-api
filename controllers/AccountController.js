@@ -97,7 +97,7 @@ module.exports = class AccountController {
         try {
             const id = req.params.id;
 
-            let account = await Account.findById(id).lean();
+            let account = await Account.findById(id);
 
             if (!account) return res.status(404).send('Could not find the account.');
 
@@ -111,9 +111,9 @@ module.exports = class AccountController {
 
             newPassword = await bcrypt.hash(newPassword, 10);
 
-            await Account.updateOne({ _id: id }, { password: newPassword });
+            account.password = newPassword;
 
-            account = await Account.findById(id).lean();
+            await account.save();
 
             res.status(200).json(account)
         } catch (error) {
