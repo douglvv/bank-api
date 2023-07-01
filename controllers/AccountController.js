@@ -1,5 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Gera o token para o login
+
+
+/**
+ * Criar um arquivo `.env` e adicionar
+ * JWT_TOKEN=seusecret
+ */
 require('dotenv').config(); // Acessa o conteúdo do arquivo.env
 const secret = process.env.JWT_TOKEN; // Chave do token
 const Account = require('../models/Account');
